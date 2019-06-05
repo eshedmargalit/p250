@@ -14,6 +14,10 @@ from configs import get_load_config, get_validation_config
 
 from tfutils import base
 
+## Resolve project path
+PROJ_PATH = os.environ.get("P250_PROJ_PATH")
+if PROJ_PATH is None:
+    PROJ_PATH = "/mnt/fs6/eshedm"
 
 def get_params(load_config, data_config):
     params = {}
@@ -122,7 +126,7 @@ def main():
 
     res = base.test_from_params(**params)
 
-    save_base = "/mnt/fs6/eshedm/extracted_features/"
+    save_base = PROJ_PATH + "/extracted_features/"
     save_path = (
         save_base
         + FLAGS.exp_id

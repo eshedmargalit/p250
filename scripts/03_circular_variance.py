@@ -23,6 +23,11 @@ import deepdish as dd
 
 from p250.utils.tuning_curves import circular_variance
 
+## Resolve project path
+PROJ_PATH = os.environ.get("P250_PROJ_PATH")
+if PROJ_PATH is None:
+    PROJ_PATH = "/mnt/fs6/eshedm"
+
 # globals
 # define values from Ringach et al., 2002
 RINGACH_VALS = np.array([
@@ -41,7 +46,7 @@ RINGACH_VALS = np.array([
     14
 ]).astype(np.float)
 
-TC_DIR = '/mnt/fs6/eshedm/tuning_curves_mean'
+TC_DIR = PROJ_PATH + '/tuning_curves_mean'
 
 def get_circular_variances(fpath):
     """
@@ -160,7 +165,7 @@ def main(model_name, load_dir, layers, layer_names, subplot_axes):
             os.makedirs(sd)
 
     histogram_list = [] 
-    count_save_path = "/mnt/fs6/eshedm/results_cache/cv_hist_counts/%s.npz" % model_name
+    count_save_path = PROJ_PATH + "/results_cache/cv_hist_counts/%s.npz" % model_name
     histogram_list_exists = os.path.isfile(count_save_path)
     for fpath, layer_name in zip(all_files, layer_names):
         print("Processing %s..." % layer_name)
@@ -290,7 +295,7 @@ if __name__ == "__main__":
                         type=float,
                         default=1.0)
     FLAGS, _ = parser.parse_known_args()
-    SAVE_BASE = "/mnt/fs6/eshedm/figures/circular_variance_thr_%.2f" % FLAGS.activity_threshold
+    SAVE_BASE = PROJ_PATH + "/figures/circular_variance_thr_%.2f" % FLAGS.activity_threshold
     if not os.path.isdir(SAVE_BASE):
         os.makedirs(SAVE_BASE)
 

@@ -30,6 +30,11 @@ python setup.py install
 
 ## Using the scripts
 Because this project is based on pre-trained models, you need access to the appropriate model checkpoints. Due to their size, they are not uploaded here. Similarly, `.tfrecord` files with test set stimuli are not uploaded. Please contact Eshed for access.
+You'll need to set the `PROJ_PATH` to tell the scripts where to look for inputs and where to output figures. 
+```bash
+export PROJ_PATH="/mnt/fs6/eshedm"
+```
+Note the lack of trailing forward-slash, the scripts append that for you.
 
 #### `scripts/01_get_features/extract_features.py`
 Used to save an HDF5 file with model features. Example use case:

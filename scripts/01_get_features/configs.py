@@ -15,6 +15,10 @@ from p250.data_providers.imagenet_data import ImageNet
 from p250.data_providers.sineff_data import SineFF
 from p250.utils.utils import loss_and_in_top_k
 
+## Resolve project path
+PROJ_PATH = os.environ.get("P250_PROJ_PATH")
+if PROJ_PATH is None:
+    PROJ_PATH = "/mnt/fs6/eshedm"
 
 def get_load_config(exp_id, step, valname, seed=0, port=26016):
     """
@@ -67,7 +71,7 @@ def get_load_config(exp_id, step, valname, seed=0, port=26016):
             "dbname": "tpu-scl",
             "collname": "noscl",
             "exp_id": "alexnet-baseline-0",
-            "from_ckpt": "/mnt/fs6/eshedm/gs_models/alexnet-baseline-0/model.ckpt-"
+            "from_ckpt": PROJ_PATH + "/gs_models/alexnet-baseline-0/model.ckpt-"
             + str(step),
             "model_params": {
                 "func": model_functions.alexnet_wrapper,
@@ -99,7 +103,7 @@ def get_load_config(exp_id, step, valname, seed=0, port=26016):
             "dbname": "null",
             "collname": "null",
             "exp_id": "null",
-            "from_ckpt": "/mnt/fs6/tf-slim/checkpoints/vgg_19.ckpt",
+            "from_ckpt": PROJ_PATH + "/tf-slim/checkpoints/vgg_19.ckpt",
             "model_params": {
                 "func": model_functions.vgg_19_wrapper,
                 "num_classes": 1000,
@@ -114,11 +118,11 @@ def get_load_config(exp_id, step, valname, seed=0, port=26016):
             "dbname": "null",
             "collname": "null",
             "exp_id": "null",
-            "from_ckpt": "/mnt/fs6/eshedm/checkpoints/model.ckpt-1940300",
+            "from_ckpt": PROJ_PATH + "/checkpoints/model.ckpt-1940300",
             "model_params": {
                 "func": model_functions.tnn_model_func,
                 "cfg_final": None,
-                "json_fpath": "/mnt/fs6/eshedm/checkpoints/ff_128_neuralfit.json",
+                "json_fpath": PROJ_PATH + "/checkpoints/ff_128_neuralfit.json",
                 "batch_size": 128,
             },
             "step": None,
@@ -166,8 +170,8 @@ def get_validation_config(name, load_config, prep_type="resnet"):
     Returns a configuration dictionary for the validation data specified
     """
     # point to raw tfrecord data files
-    imagenet_dir = "/mnt/fs1/Dataset/TFRecord_Imagenet_standard/image_label_full"
-    sineff_20190507_dir = "/mnt/fs6/eshedm/tfrecords/sineff_20190507"
+    imagenet_dir = PROJ_PATH + "/TFRecord_Imagenet_standard/image_label_full"
+    sineff_20190507_dir = PROJ_PATH + "/tfrecords/sineff_20190507"
 
     targdict = {
         "func": get_extraction_target,

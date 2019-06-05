@@ -10,8 +10,13 @@ import numpy as np
 from p250.utils.file_utils import get_features
 from p250.utils.tuning_curves import compute_tuning_curves
 
+## Resolve project path
+PROJ_PATH = os.environ.get("P250_PROJ_PATH")
+if PROJ_PATH is None:
+    PROJ_PATH = "/mnt/fs6/eshedm"
+
 # Globals: point to where tuning curves should be saved
-TC_DIR = '/mnt/fs6/eshedm/tuning_curves_mean'
+TC_DIR = PROJ_PATH + '/tuning_curves_mean'
 
 
 def compute_all_tc():
@@ -29,7 +34,7 @@ def compute_all_tc():
 
 def vgg19_slim_all():
     model_name = 'vgg19_slim_step_0'
-    feature_path = '/mnt/fs6/eshedm/extracted_features/%s_sineff_20190507_features_all.h5' % model_name
+    feature_path = PROJ_PATH + '/extracted_features/%s_sineff_20190507_features_all.h5' % model_name
 
     save_dir = '%s/20190507_sineff/%s_all' % (TC_DIR, model_name)
     if not os.path.isdir(save_dir):
@@ -110,7 +115,7 @@ def vgg19_slim_all():
 
 def alexnet_allrelu():
     model_name = 'alexnet-baseline-0-allrelu_step_115000'
-    feature_path = '/mnt/fs6/eshedm/extracted_features/%s_sineff_20190507_features.h5' % model_name
+    feature_path = PROJ_PATH + '/extracted_features/%s_sineff_20190507_features.h5' % model_name
 
     save_dir = '%s/20190507_sineff/%s' % (TC_DIR, model_name)
     if not os.path.isdir(save_dir):
@@ -174,7 +179,7 @@ def alexnet_allrelu():
 
 def tnn():
     model_name = 'tnn_step_0'
-    feature_path = '/mnt/fs6/eshedm/extracted_features/%s_sineff_20190507_features_tnn.h5' % model_name
+    feature_path = PROJ_PATH + '/extracted_features/%s_sineff_20190507_features_tnn.h5' % model_name
 
     save_dir = '%s/20190507_sineff/%s' % (TC_DIR, model_name)
     if not os.path.isdir(save_dir):
