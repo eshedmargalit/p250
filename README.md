@@ -47,7 +47,38 @@ Given the outputs of the previous script, computes tuning curves for orientation
 Given the tuning curves, computes circular variance for orientation tuning and compares the distribution of each model layer to published data from Ringach et al., 2002
 
 ## Results
-TODO
+In this work, three architectures were compared:
+1. Alexnet
+2. VGG19
+3. TNN10, a 10-layer convolutional architecture
+
+Each model was trained on ImageNet, then evaluated on a set of sine gratings at different orientations, spatial frequencies, phases, and colors. For this analysis, tuning curves with respect to orientation were computed. From each tuning curve, a measure of sharpness, `circular variance` can be computed. Lower circular variances correspond to sharper tuning curves. 
+
+### Example Tuning Curves for Each Model
+##### Alexnet: conv1
+![Alexnet conv1](img/alexnet_conv1_example_tc.png)
+
+##### VGG: conv1_1
+![VGG conv1_1](img/vgg_conv1_1_example_tc.png)
+
+##### TNN: conv1
+![TNN conv1](img/tnn_conv1_example_tc.png)
+
+### Circular Variance Histograms
+Instead of looking at tuning curves for single units for a single layer, we can create histograms of all circular variance values for all units in all layers, then compare to the published macaque V1 data:
+
+##### Alexnet
+![Alexnet](img/alexnet_cv.png)
+
+##### VGG
+![VGG](img/vgg_cv.png)
+
+##### TNN
+![TNN](img/tnn_cv.png)
+
+### Final Comparison
+Finally, we can correlate each layer histogram to the true data to identify our V1 candidate. In this plot, different colors index different models, and different hues go from early in the model (light colors) to later in the model (dark colors):
+![TNN](img/all_layers_all_models_correlations.png)
 
 ## Conclusions
 TODO
