@@ -8,7 +8,6 @@
 *.npy
 *.npz
 *.pkl
-*.png
 *.jpg
 *.tif
 *.h5
