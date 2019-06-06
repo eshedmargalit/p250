@@ -7,16 +7,15 @@ a bit more fair.
 """
 from __future__ import division
 
-# mpl imports
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
+import pdb
 import os
 import argparse
 import pprint
 
-# package imports
 import numpy as np
 import scipy.stats as stats
 import deepdish as dd
@@ -200,6 +199,7 @@ def main(model_name, load_dir, layers, layer_names, subplot_axes):
 
     plot_layer_corr(histogram_list, correlation_by_layer_save_path, layer_names)
     histogram_plot(histogram_list, histogram_save_path, layer_names, subplot_axes)
+    return histogram_list
 
 def plot_ringach_hist(ax):
     bin_edges = np.linspace(0, 1, 14)
@@ -219,14 +219,14 @@ def plot_ringach_hist(ax):
 
 def make_plots_for_all_models():
     # alexnet
-    layers = [
+    alexnet_layers = [
         "conv1",
         "conv2",
         "conv3",
         "conv4",
         "conv5",
     ]
-    layer_names = ["%s_relu" % x for x in layers]
+    layer_names = ["%s_relu" % x for x in alexnet_layers]
     model_name = 'alexnet-baseline-0-allrelu_step_115000'
     load_dir = '%s/20190507_sineff/%s' % (TC_DIR, model_name)
 
@@ -235,11 +235,11 @@ def make_plots_for_all_models():
     plot_ringach_hist(axes[0])
 
     print("Processing Alexnet...")
-    main(model_name, load_dir, layers, layer_names, axes[1:])
+    alexnet_histograms = main(model_name, load_dir, alexnet_layers, layer_names, axes[1:])
     plt.close(fig)
 
     # VGG19
-    layers = [
+    vgg_layers = [
         "conv1_1",
         "conv1_2",
         "conv2_1",
@@ -257,7 +257,7 @@ def make_plots_for_all_models():
         "conv5_3",
         "conv5_4",
     ]
-    layer_names = ["%s_relu" % x for x in layers]
+    layer_names = ["%s_relu" % x for x in vgg_layers]
     model_name = 'vgg19_slim_step_0'
     load_dir = '%s/20190507_sineff/%s_all' % (TC_DIR, model_name)
     fig, axes = plt.subplots(figsize=(20, 16), nrows=4, ncols=5)
@@ -265,12 +265,12 @@ def make_plots_for_all_models():
     plot_ringach_hist(axes[0])
 
     print("Processing VGG...")
-    main(model_name, load_dir, layers, layer_names, axes[1:])
+    vgg_histograms = main(model_name, load_dir, vgg_layers, layer_names, axes[1:])
     plt.close(fig)
 
     # TNN
-    layers = ["conv%d" % x for x in range(1, 11)]
-    layer_names =  layers
+    tnn_layers = ["conv%d" % x for x in range(1, 11)]
+    layer_names =  tnn_layers
     model_name = 'tnn_step_0'
     load_dir = '%s/20190507_sineff/%s' % (TC_DIR, model_name)
     fig, axes = plt.subplots(figsize=(16, 12), nrows=3, ncols=4)
@@ -278,8 +278,56 @@ def make_plots_for_all_models():
     plot_ringach_hist(axes[0])
 
     print("Processing TNN...")
-    main(model_name, load_dir, layers, layer_names, axes[1:])
+    tnn_histograms = main(model_name, load_dir, tnn_layers, layer_names, axes[1:])
     plt.close(fig)
+
+    print("Plotting final correlation figure...")
+    plt.rcParams.update({'font.size': 16})
+    alexnet_color = "#052F5F"
+    vgg_color = "#06A77D"
+    tnn_color = "#F1A208"
+    
+    # append layer identifiers
+    alexnet_layers = ["alexnet_" + x for x in alexnet_layers]
+    vgg_layers = ["vgg_" + x for x in vgg_layers]
+    tnn_layers = ["tnn_" + x for x in tnn_layers]
+
+    all_histograms = np.concatenate([alexnet_histograms, vgg_histograms, tnn_histograms])
+    all_layers = np.concatenate([alexnet_layers, vgg_layers, tnn_layers])
+    all_colors = np.concatenate([
+        np.tile(alexnet_color, alexnet_histograms.shape[0]), 
+        np.tile(vgg_color, vgg_histograms.shape[0]), 
+        np.tile(tnn_color, tnn_histograms.shape[0]), 
+    ])
+
+    alexnet_alphas = np.linspace(0.2, 1, len(alexnet_layers))
+    vgg_alphas = np.linspace(0.2, 1, len(vgg_layers))
+    tnn_alphas = np.linspace(0.2, 1, len(tnn_layers))
+    all_alphas = np.concatenate([alexnet_alphas, vgg_alphas, tnn_alphas])
+
+    # sort by correlation to data
+    ringach_correlations = np.array([stats.pearsonr(x, RINGACH_VALS)[0] for x in all_histograms])
+    sort_ind = np.argsort(-ringach_correlations) # negate to sort in descending order
+    sorted_correlations = ringach_correlations[sort_ind]
+    sorted_layers = all_layers[sort_ind]
+    sorted_colors = all_colors[sort_ind]
+    sorted_alphas = all_alphas[sort_ind]
+
+    fig, ax = plt.subplots(figsize=(25, 8))
+    for idx, (corr, color, alpha) in enumerate(zip(sorted_correlations, sorted_colors, sorted_alphas)):
+        ax.bar(idx, corr, facecolor=color, alpha=alpha)
+    ax.set_xticks(np.arange(sorted_correlations.shape[0]))
+    ax.set_xticklabels(sorted_layers, rotation=30)
+    ax.set_ylabel('Correlation with Ringach Data')
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.set_ylim([-0.3, 1.0])
+
+    save_path = "%s/all_model_all_layer_sorted_correlations.png" % SAVE_BASE
+    plt.tight_layout()
+    plt.savefig(save_path, dpi=150)
+    plt.close(fig)
+
 
 if __name__ == "__main__":
     # parse input arguments
