@@ -7,7 +7,7 @@ setup(name='p250',
         'numpy==1.16.3',
         'matplotlib==2.0',
         'h5py==2.9.0',
-        'tensorflow-gpu==1.9.0',
+        'tensorflow-gpu==1.15.2',
         'deepdish'
     ]
 )
